@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Для Медины</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Canvas для интерактивных частиц -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Свечение за курсором -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Индикатор прогресса чтения -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Панель управления (Музыка и Режимы) -->
+    <div class="controls-panel">
+        <button id="toggleFX" class="icon-btn" title="Переключить эффекты" aria-label="Переключить эффекты">
+            <svg class="icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+        </button>
+        <button id="toggleAudio" class="icon-btn" title="Включить/выключить музыку" aria-label="Музыка">
+            <svg class="icon icon-mute" viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+            <svg class="icon icon-audio hidden" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+    </div>
+
+    <!-- Аудиопоток (Амбиентная спокойная музыка без слов) -->
+    <audio id="bgMusic" loop preload="none">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=ambient-piano-amp-strings-10711.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Основной контейнер с секциями -->
+    <main class="container">
+
+        <!-- 1. ПЕРВЫЙ ЭКРАН -->
+        <section class="screen active" id="screen1">
+            <div class="content-box text-center">
+                <h1 class="title-glow cinematic-fade" style="--delay: 0.2s">Медина...</h1>
+                <p class="subtitle cinematic-fade" style="--delay: 0.6s">Я не знаю точно, в какой момент сделал тебе больно</p>
+                <div class="divider cinematic-fade" style="--delay: 0.9s"></div>
+                <p class="quote cinematic-fade" style="--delay: 1.2s">Но я знаю одно — если ты обиделась из-за меня, значит мне есть за что попросить прощения.</p>
+                <button class="btn btn-primary ripple cinematic-fade" id="btnStart" style="--delay: 1.6s">
+                    <span>Открыть моё извинение</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ОСТАЛЬНОЙ КОНТЕНТ (Появляется плавно при скролле) -->
+        <div id="storyContent" class="story-container hidden-story">
+
+            <!-- 2. ЭКРАН «Я НЕ БУДУ ОПРАВДЫВАТЬСЯ» -->
+            <section class="screen reveal-screen" id="screen2">
+                <div class="glass-card">
+                    <p class="reveal-text">Я долго думал, что именно мог сделать не так.</p>
+                    <p class="reveal-text">И честно — я не хочу придумывать оправдания или делать вид, что всё нормально.</p>
+                    <div class="soft-line"></div>
+                    <p class="reveal-text highlight-text">Если мои слова или поступки сделали тебе неприятно — мне действительно жаль.</p>
+                    <p class="reveal-text">Мне важнее твои чувства, чем попытка доказать, что я был прав.</p>
+                </div>
+            </section>
+
+            <!-- 3. ИНТЕРАКТИВНАЯ КАРТОЧКА -->
+            <section class="screen reveal-screen" id="screen3">
+                <div class="interactive-card" id="cardUnfold">
+                    <div class="card-header">
+                        <span class="card-title">Есть вещи, которые невозможно исправить одним словом “прости”</span>
+                        <span class="card-icon">+</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-content">
+                            <p>Поэтому я не хочу просто написать тебе красивый текст.</p>
+                            <p>Я хочу, чтобы ты знала:</p>
+                            <ul>
+                                <li>я признаю, что мог тебя задеть,</li>
+                                <li>мне жаль,</li>
+                                <li>и я хочу понять, что именно тебя ранило.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. ЭКРАН «БЕЗ ДАВЛЕНИЯ» -->
+            <section class="screen reveal-screen" id="screen4">
+                <div class="glass-card calm-card">
+                    <p class="reveal-text">Я не прошу тебя сразу перестать обижаться.</p>
+                    <p class="reveal-text">Не прошу забыть всё за одну минуту.</p>
+                    <p class="reveal-text">И не хочу заставлять тебя отвечать.</p>
+                    <div class="soft-line"></div>
+                    <p class="reveal-text">Если тебе нужно время — я пойму.</p>
+                    <p class="reveal-text focus-text">Мне просто хотелось, чтобы ты знала, что мне не всё равно.</p>
+                </div>
+            </section>
+
+            <!-- 5. «ЕСЛИ Я СДЕЛАЛ ТЕБЕ БОЛЬНО» -->
+            <section class="screen reveal-screen" id="screen5">
+                <h3 class="section-subtitle reveal-text">Если я сделал тебе больно...</h3>
+                <div class="cards-grid">
+                    
+                    <div class="mini-card" data-expand="1">
+                        <div class="mini-card-head">
+                            <span>Мои слова</span>
+                            <span class="plus-icon">+</span>
+                        </div>
+                        <div class="mini-card-content">
+                            <p>Возможно, я сказал что-то не так</p>
+                        </div>
+                    </div>
+
+                    <div class="mini-card" data-expand="2">
+                        <div class="mini-card-head">
+                            <span>Моё поведение</span>
+                            <span class="plus-icon">+</span>
+                        </div>
+                        <div class="mini-card-content">
+                            <p>Возможно, я повёл себя так, что тебе стало неприятно</p>
+                        </div>
+                    </div>
+
+                    <div class="mini-card" data-expand="3">
+                        <div class="mini-card-head">
+                            <span>То, чего я не заметил</span>
+                            <span class="plus-icon">+</span>
+                        </div>
+                        <div class="mini-card-content">
+                            <p>А возможно, я просто не понял вовремя, что тебе больно</p>
+                        </div>
+                    </div>
+
+                </div>
+                <p class="reveal-text final-grid-text">Но ни одна из причин не важнее твоих чувств.</p>
+            </section>
+
+            <!-- 6. ЭКРАН С ГЛАВНЫМ ИЗВИНЕНИЕМ -->
+            <section class="screen reveal-screen" id="screen6">
+                <div class="main-apology-box">
+                    <h2 class="main-title-glow">Медина, прости меня.</h2>
+                    <p class="apology-subtext">
+                        Не за какую-то одну идеальную причину, которую я сейчас могу придумать.<br>
+                        А за то, что сделал тебе неприятно или заставил чувствовать себя плохо.
+                    </p>
+                    <p class="sincere-line">Я правда сожалею.</p>
+                </div>
+            </section>
+
+            <!-- 7. ИНТЕРАКТИВНАЯ КНОПКА -->
+            <section class="screen reveal-screen" id="screen7">
+                <div class="interactive-btn-wrapper">
+                    <button class="btn btn-glass ripple" id="btnMore">
+                        <span>Мне хочется сказать ещё кое-что</span>
+                    </button>
+                    <div class="hidden-message-card glass-card hidden" id="moreMessage">
+                        <p>Ты не обязана сейчас отвечать.</p>
+                        <p>Не обязана сразу прощать.</p>
+                        <p>Не обязана делать вид, что всё хорошо.</p>
+                        <div class="soft-line"></div>
+                        <p class="highlight-text">Я просто хочу, чтобы между нами снова было спокойно.</p>
+                        <p>И если я где-то ошибся — я хочу это понять.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. ФИНАЛЬНЫЙ ЭКРАН -->
+            <section class="screen reveal-screen" id="screen8">
+                <div class="glass-card text-center final-card">
+                    <p class="typewriter-line">Я не идеален.</p>
+                    <p class="typewriter-line">Иногда я могу не заметить очевидного.</p>
+                    <p class="typewriter-line">Иногда могу сказать не то.</p>
+                    <p class="typewriter-line">Иногда могу понять слишком поздно.</p>
+                    
+                    <div class="soft-line my-4"></div>
+                    
+                    <p class="typewriter-line focus-text">Но сейчас я точно понимаю одно:</p>
+                    <p class="typewriter-line focus-text bold">Мне жаль, что тебе было больно из-за меня.</p>
+                    
+                    <h2 class="final-apology-title">Прости меня, Медина.</h2>
+                    <p class="tagline">Без давления. Без условий. Просто искренне.</p>
+                </div>
+            </section>
+
+            <!-- 9. ПОСЛЕДНЯЯ ИНТЕРАКЦИЯ -->
+            <section class="screen reveal-screen" id="screen9">
+                <div class="close-wrapper" id="closeSection">
+                    <button class="btn btn-outline ripple" id="btnCloseLetter">
+                        <span>Закрыть письмо</span>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Экран прощания после закрытия -->
+        <div class="farewell-screen hidden" id="farewellScreen">
+            <div class="farewell-content">
+                <h2 class="farewell-title">Береги себя, Медина.</h2>
+                <button class="btn btn-link ripple" id="btnReturn">
+                    <span>Вернуться</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
